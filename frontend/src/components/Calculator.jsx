@@ -105,7 +105,15 @@ export default function Calculator({ onComplete }) {
         score: 68, totalKwh: kwh.toFixed(2), totalCo2: (kwh * 400).toFixed(2), totalWater: (kwh * 1.8).toFixed(2),
         recommendations: ["Batch requests.", "Switch regions.", "Use lighter models."],
         comparisonData: [{ name: 'Usage', co2: kwh * 400 }, { name: 'Optimized', co2: kwh * 400 * 0.4 }, { name: 'Avg', co2: 180 }],
-        trendData: Array.from({length: 7}, (_, i) => ({ day: `Day ${i+1}`, emissions: (kwh * 400 / 7) * (1 + Math.random()), water: (kwh * 1.8 / 7) * (1 + Math.random()) }))
+        trendData: Array.from({length: 7}, (_, i) => ({ day: `Day ${i+1}`, emissions: (kwh * 400 / 7) * (1 + Math.random()), water: (kwh * 1.8 / 7) * (1 + Math.random()) })),
+        jpt: "0.18",
+  radarData: [
+    { subject: 'Carbon', A: 70, fullMark: 100 },
+    { subject: 'Water', A: 80, fullMark: 100 },
+    { subject: 'Energy (JPT)', A: 90, fullMark: 100 },
+    { subject: 'Compute Density', A: 65, fullMark: 100 },
+    { subject: 'SLA Efficiency', A: 85, fullMark: 100 },
+  ],
       };
       setTimeout(() => { setIsCalculating(false); onComplete(fallbackData); }, 2500);
     }

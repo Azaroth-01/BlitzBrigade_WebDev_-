@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+// CRITICAL FIX: Added Radar components to imports
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, 
-  AreaChart, Area, CartesianGrid 
+  AreaChart, Area, CartesianGrid, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis 
 } from 'recharts';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { ArrowLeft, Download, Zap, Leaf, ShieldAlert, Cloud, CheckCircle2, Loader2, Droplets } from 'lucide-react';
+import { ArrowLeft, Download, Zap, Leaf, ShieldAlert, Cloud, CheckCircle2, Loader2, Droplets, Cpu } from 'lucide-react';
 
 export default function Dashboard({ data, onReset }) {
   const [isSyncing, setIsSyncing] = useState(false);
 
-  // Destructure the payload
-  const { score, totalKwh, totalCo2, totalWater, recommendations, comparisonData, trendData } = data;
+  // Destructure the payload - ensuring radarData and jpt are pulled
+  const { score, totalKwh, totalCo2, totalWater, jpt, recommendations, comparisonData, trendData, radarData } = data;
   
   const handleEnterpriseSync = () => {
     setIsSyncing(true);
@@ -45,7 +46,7 @@ export default function Dashboard({ data, onReset }) {
         <button onClick={onReset} className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-rta-black rounded-xl font-bold hover:bg-rta-bg shadow-[4px_4px_0px_0px_#171717] transition-all">
           <ArrowLeft className="w-5 h-5" /> Re-calculate
         </button>
-        <h1 className="text-3xl font-black hidden md:block">GenAI Impact Report</h1>
+        <h1 className="text-3xl font-black hidden md:block text-rta-black">GenAI Impact Report</h1>
         <button onClick={handleExport} className="flex items-center gap-2 px-6 py-3 bg-rta-yellow text-rta-black border-2 border-rta-black rounded-xl font-bold hover:bg-rta-black hover:text-white shadow-[4px_4px_0px_0px_#171717] transition-all">
           <Download className="w-5 h-5" /> Export PDF Report
         </button>
@@ -95,7 +96,7 @@ export default function Dashboard({ data, onReset }) {
             Gemini AI Optimization Insights
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {recommendations.map((rec, index) => (
+            {recommendations && recommendations.map((rec, index) => (
               <div key={index} className="bg-white/10 p-5 rounded-2xl border border-white/20">
                 <p className="font-medium text-lg leading-relaxed">{rec}</p>
               </div>
@@ -103,11 +104,11 @@ export default function Dashboard({ data, onReset }) {
           </div>
         </motion.div>
 
-        {/* Charts Row */}
+        {/* Charts Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
+          {/* Left: Trend Charts */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Chart 1: CO2 Area Chart */}
             <motion.div variants={itemVars} className="bg-white border-4 border-rta-black rounded-3xl p-6 shadow-[8px_8px_0px_0px_#171717]">
               <h3 className="text-xl font-black mb-2">7-Day Emissions Trend (g CO₂)</h3>
               <div className="h-[250px] w-full mt-4">
@@ -129,7 +130,6 @@ export default function Dashboard({ data, onReset }) {
               </div>
             </motion.div>
 
-            {/* Chart 2: Standard Water Column Chart */}
             <motion.div variants={itemVars} className="bg-white border-4 border-rta-black rounded-3xl p-6 shadow-[8px_8px_0px_0px_#06B6D4]">
               <h3 className="text-xl font-black mb-2 flex items-center gap-2">
                 <Droplets className="w-6 h-6 text-[#06B6D4]" /> 7-Day Water Cooling Trend (Liters)
@@ -148,45 +148,45 @@ export default function Dashboard({ data, onReset }) {
             </motion.div>
           </div>
 
+          {/* Right: Analysis & Radar */}
           <div className="space-y-6 flex flex-col">
-            <motion.div variants={itemVars} className="bg-white border-4 border-rta-black rounded-3xl p-6 shadow-[8px_8px_0px_0px_#171717] print:hidden">
-              <div className="flex items-center gap-3 mb-4">
-                <Cloud className="w-6 h-6 text-rta-blue" />
-                <h3 className="text-xl font-black">Enterprise Data</h3>
+            <motion.div variants={itemVars} className="bg-white border-4 border-rta-black rounded-3xl p-6 shadow-[8px_8px_0px_0px_#171717] flex flex-col">
+              <h3 className="text-xl font-black mb-4 flex items-center gap-2">
+                <Cpu className="w-6 h-6 text-rta-blue" /> Efficiency Balance
+              </h3>
+              <div className="h-[240px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
+                    <PolarGrid stroke="#e5e7eb" />
+                    <PolarAngleAxis dataKey="subject" tick={{ fill: '#171717', fontSize: 10, fontWeight: 'bold' }} />
+                    <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
+                    <Radar
+                      name="Efficiency"
+                      dataKey="A"
+                      stroke="#2563EB"
+                      fill="#2563EB"
+                      fillOpacity={0.5}
+                      isAnimationActive={false}
+                    />
+                  </RadarChart>
+                </ResponsiveContainer>
               </div>
-              <p className="text-gray-600 font-medium mb-6">Connect your cloud provider to automatically pull real-time AI API billing and usage logs.</p>
-              <button onClick={handleEnterpriseSync} disabled={isSyncing} className="w-full flex justify-center items-center gap-2 py-4 bg-rta-bg border-2 border-rta-black rounded-xl font-bold hover:bg-gray-100 transition-all disabled:opacity-70">
-                {isSyncing ? <Loader2 className="w-5 h-5 animate-spin text-rta-blue" /> : <CheckCircle2 className="w-5 h-5 text-green-500" />}
-                {isSyncing ? 'Syncing...' : 'Sync AWS Billing'}
-              </button>
+              <div className="mt-4 p-3 bg-rta-bg border-2 border-rta-black rounded-xl text-center">
+                <div className="text-xs font-bold uppercase text-gray-500">Hardware Telemetry (JPT)</div>
+                <div className="text-2xl font-black text-rta-black">{jpt} <span className="text-sm">J / Token</span></div>
+              </div>
             </motion.div>
 
             <motion.div variants={itemVars} className="bg-white border-4 border-rta-black rounded-3xl p-6 shadow-[8px_8px_0px_0px_#171717] flex-grow flex flex-col">
-              <h3 className="text-xl font-black mb-2">Benchmarking</h3>
+              <h3 className="text-xl font-black mb-2 px-2 pt-2">Benchmarking</h3>
               <div className="h-[200px] w-full mt-4">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={comparisonData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
-  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-  <XAxis 
-    dataKey="name" 
-    axisLine={false} 
-    tickLine={false} 
-    tick={{fontSize: 11, fontWeight: '800', fill: '#171717'}} 
-    interval={0} // Forces all labels to show
-  />
-  <RechartsTooltip 
-    cursor={{fill: '#FDF9F1'}} 
-    contentStyle={{ borderRadius: '12px', border: '2px solid #171717', fontWeight: 'bold' }} 
-  />
-  {/* barSize={60} prevents the bars from becoming too wide on large screens */}
-  <Bar 
-    isAnimationActive={false} 
-    dataKey="co2" 
-    fill="#2563EB" 
-    radius={[6, 6, 0, 0]} 
-    barSize={60} 
-  />
-</BarChart>
+                  <BarChart data={comparisonData} margin={{ top: 10, right: 30, left: 0, bottom: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: '800', fill: '#171717'}} interval={0} />
+                    <RechartsTooltip cursor={{fill: '#FDF9F1'}} contentStyle={{ borderRadius: '12px', border: '2px solid #171717', fontWeight: 'bold' }} />
+                    <Bar isAnimationActive={false} dataKey="co2" fill="#2563EB" radius={[6, 6, 0, 0]} barSize={40} />
+                  </BarChart>
                 </ResponsiveContainer>
               </div>
             </motion.div>
