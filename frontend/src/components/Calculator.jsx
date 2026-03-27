@@ -53,36 +53,55 @@ export default function Calculator({ onComplete }) {
     await new Promise(r => setTimeout(r, 1200));
     
     setSyncState('fetching');
-    setLoadingText('Extracting telemetry & billing logs...');
+    setLoadingText('Syncing 24h Activity Logs...');
     await new Promise(r => setTimeout(r, 2000));
     
     setSyncState('done');
-    setLoadingText('Generating report...');
+    setLoadingText('Generating Individual Report...');
     await new Promise(r => setTimeout(r, 800));
 
-    const massiveRequests = 145000;
-    const kwh = (massiveRequests * 0.0002 * (2500 / 100));
+    // --- REALISTIC INDIVIDUAL DAILY PAYLOAD ---
+    const dailyRequests = 124; // Typical heavy dev day
+    const avgTokens = 1150;    // Standard prompt + code response
     
+    // Proxy Math: 124 requests * 0.0002 kWh * (1150/100) = ~0.28 kWh
+    const kwh = dailyRequests * 0.0002 * (avgTokens / 100);
+    const totalTokens = dailyRequests * avgTokens;
+    const totalJoules = kwh * 3600000;
+    const jptValue = (totalJoules / totalTokens).toFixed(2);
+
     onComplete({
-      score: 42, 
-      totalKwh: kwh.toFixed(2),
-      totalCo2: (kwh * 400).toFixed(2),
-      totalWater: (kwh * 1.8).toFixed(2),
+      score: 82, // High score because individual impact is small compared to enterprise
+      totalKwh: kwh.toFixed(3),
+      totalCo2: (kwh * 400).toFixed(1), // ~112g CO2 (Like driving 0.5km)
+      totalWater: (kwh * 1.8).toFixed(2), // ~0.5L (Half a water bottle)
+      jpt: jptValue,
       recommendations: [
-        "Your AI usage spikes at 2 AM EST. Batching non-critical jobs to off-peak hours reduces emissions by 14%.",
-        "Semantic caching could cut compute energy by 40%.",
-        "Switch tasks to Gemini 2.5 Flash for 65% energy reduction per 1k tokens."
+        `You used ${user === "Aaryamaan" ? "GPT-4o" : "Claude-3"} for 80% of your requests today. Switching to Gemini 1.5 Flash for code refactoring could save 12g of CO2.`,
+        "You have 14 redundant 'Hi/Thanks' messages in your logs. Eliminating conversational filler saves ~300 Joules per turn.",
+        "Your peak usage was between 2 PM and 4 PM. Shifting deep-research queries to the morning (when the local grid is 20% greener) is recommended."
       ],
       comparisonData: [
-        { name: 'Your Usage', co2: parseFloat((kwh * 400).toFixed(2)) },
-        { name: 'Optimized', co2: parseFloat((kwh * 400 * 0.4).toFixed(2)) },
-        { name: 'Industry Avg', co2: 85000 }
+        { name: 'Your Day', co2: parseFloat((kwh * 400).toFixed(1)) },
+        { name: 'Optimized', co2: parseFloat((kwh * 400 * 0.7).toFixed(1)) },
+        { name: 'Dev Avg', co2: 150 }
       ],
-      trendData: Array.from({length: 7}, (_, i) => ({
-          day: `Day ${i+1}`,
-          emissions: parseFloat(((kwh * 400 / 7) * (1 + (Math.random() * 0.4 - 0.2))).toFixed(2)),
-          water: parseFloat(((kwh * 1.8 / 7) * (1 + (Math.random() * 0.4 - 0.2))).toFixed(2))
-      }))
+      trendData: [
+        { day: 'Mon', emissions: 98, water: 0.35 },
+        { day: 'Tue', emissions: 145, water: 0.52 },
+        { day: 'Wed', emissions: 112, water: 0.41 },
+        { day: 'Thu', emissions: 130, water: 0.48 },
+        { day: 'Fri', emissions: parseFloat((kwh * 400).toFixed(1)), water: parseFloat((kwh * 1.8).toFixed(2)) },
+        { day: 'Sat', emissions: 45, water: 0.15 },
+        { day: 'Sun', emissions: 30, water: 0.10 }
+      ],
+      radarData: [
+        { subject: 'Carbon', A: 82, fullMark: 100 },
+        { subject: 'Water', A: 90, fullMark: 100 },
+        { subject: 'Energy (JPT)', A: 85, fullMark: 100 },
+        { subject: 'Density', A: 95, fullMark: 100 },
+        { subject: 'SLA', A: 88, fullMark: 100 },
+      ]
     });
   };
 

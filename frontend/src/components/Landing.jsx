@@ -1,91 +1,86 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Leaf, Zap, ArrowRight, BarChart3 } from 'lucide-react';
+import { ArrowRight, Bug, Zap, Leaf, Droplets } from 'lucide-react';
 
 export default function Landing({ onStart }) {
-  // Framer Motion variants for a staggered entrance
-  const containerVars = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.15 }
-    }
-  };
-
-  const itemVars = {
-    hidden: { opacity: 0, y: 30 },
-    show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 100 } }
-  };
-
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 relative">
-      {/* Decorative Background Elements */}
-      <motion.div 
-        animate={{ y: [0, -20, 0] }} 
-        transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
-        className="absolute top-20 left-10 w-32 h-32 bg-rta-yellow rounded-full blur-3xl opacity-40 -z-10"
-      />
-      <motion.div 
-        animate={{ y: [0, 20, 0] }} 
-        transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
-        className="absolute bottom-20 right-10 w-48 h-48 bg-rta-blue rounded-full blur-3xl opacity-30 -z-10"
-      />
-
-      <motion.div 
-        variants={containerVars}
-        initial="hidden"
-        animate="show"
-        className="max-w-4xl w-full text-center space-y-10"
-      >
-        {/* Badge */}
-        <motion.div variants={itemVars} className="flex justify-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border-2 border-rta-black font-bold text-sm shadow-[4px_4px_0px_0px_rgba(23,23,23,1)]">
-            <span className="w-2 h-2 rounded-full bg-rta-red animate-pulse"></span>
-            Project Rta v1.0
-          </div>
-        </motion.div>
-
-        {/* Hero Headline */}
-        <motion.h1 variants={itemVars} className="text-6xl md:text-8xl font-black tracking-tight text-rta-black leading-[1.1]">
-          Measure your <br/>
-          <span className="text-rta-blue">GenAI</span> footprint.
-        </motion.h1>
-
-        {/* Subtitle */}
-        <motion.p variants={itemVars} className="text-xl md:text-2xl text-gray-700 max-w-2xl mx-auto font-medium">
-          The autonomous tool to evaluate, monitor, and reduce the ecological impact of your AI workloads. Fast, visual, and highly actionable.
-        </motion.p>
-
-        {/* CTA Button */}
-        <motion.div variants={itemVars} className="pt-8">
-          <motion.button
-            whileHover={{ scale: 1.05, y: -4 }}
-            whileTap={{ scale: 0.95, y: 0 }}
-            onClick={onStart}
-            className="group relative inline-flex items-center gap-3 px-8 py-4 bg-rta-black text-white text-xl font-bold rounded-2xl shadow-[8px_8px_0px_0px_#2563EB] hover:shadow-[12px_12px_0px_0px_#FBBF24] transition-all duration-300"
-          >
-            Start Assessment
-            <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-          </motion.button>
-        </motion.div>
-
-        {/* Feature Grid */}
-        <motion.div variants={itemVars} className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-16">
-          {[
-            { icon: <Zap className="w-6 h-6 text-rta-yellow" />, title: "Energy Tracking", desc: "Calculate kWh across multiple LLMs." },
-            { icon: <Leaf className="w-6 h-6 text-rta-red" />, title: "CO₂ Estimation", desc: "Convert compute into real-world emissions." },
-            { icon: <BarChart3 className="w-6 h-6 text-rta-blue" />, title: "Smart Insights", desc: "Gemini-powered tips to reduce footprint." }
-          ].map((feature, idx) => (
-            <div key={idx} className="bg-white border-2 border-rta-black rounded-3xl p-6 text-left shadow-[4px_4px_0px_0px_rgba(23,23,23,1)]">
-              <div className="w-12 h-12 rounded-xl bg-rta-bg border-2 border-rta-black flex items-center justify-center mb-4">
-                {feature.icon}
-              </div>
-              <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-              <p className="text-gray-600 font-medium">{feature.desc}</p>
+    <div className="bg-[#FDF9F1] min-h-screen overflow-x-hidden pb-20">
+      
+      {/* 1. Sleek Small Header (Fixed or Absolute) */}
+      <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-sm">
+        <div className="bg-white border-2 border-rta-black rounded-full px-6 py-2 flex items-center justify-center shadow-[4px_4px_0px_0px_#171717]">
+          <div className="flex items-center gap-3">
+            <div className="bg-rta-yellow p-1 rounded-lg border-2 border-rta-black">
+              <Bug className="w-5 h-5 text-rta-black" />
             </div>
-          ))}
-        </motion.div>
-      </motion.div>
+            <span className="text-3xl font-black text-rta-black tracking-tighter">ऋत</span>
+          </div>
+        </div>
+      </nav>
+
+      {/* Main Content Wrapper */}
+      <div className="max-w-7xl mx-auto pt-32 px-6 flex flex-col items-center gap-16">
+        
+        {/* 2. Hero Heading Section */}
+        <header className="text-center">
+          <h1 
+            className="text-6xl md:text-[8rem] font-black text-rta-black leading-[0.85] tracking-tighter uppercase"
+            style={{ textShadow: '10px 10px 0px #2563EB' }}
+          >
+            DON'T LET AI<br />
+            <span className="text-rta-red" style={{ textShadow: '10px 10px 0px #171717' }}>KILL YOUR</span><br />
+            PLANET.
+          </h1>
+        </header>
+
+        {/* 3. The Assessment Card (Static & High Impact) */}
+        <div className="bg-white border-4 border-rta-black rounded-[40px] w-full max-w-5xl p-8 md:p-16 shadow-[20px_20px_0px_0px_#171717] flex flex-col md:flex-row items-center gap-12">
+          
+          {/* Floating Bee (Kept the float for "juice") */}
+          <div className="relative w-64 h-64 flex-shrink-0 flex items-center justify-center">
+            <motion.div
+              animate={{ y: [-15, 15, -15], rotateY: [-10, 10, -10] }}
+              transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+              className="relative z-10"
+            >
+              <Bug className="w-48 h-48 text-rta-yellow drop-shadow-[15px_15px_0px_rgba(0,0,0,0.1)]" />
+              <div className="absolute inset-0 bg-rta-yellow/30 blur-[50px] -z-10 rounded-full" />
+            </motion.div>
+            <div className="absolute border-2 border-dashed border-rta-black/10 w-full h-full rounded-full animate-spin-slow" />
+          </div>
+
+          {/* Content */}
+          <div className="flex-grow text-center md:text-left space-y-6">
+            <h2 className="text-4xl md:text-6xl font-black text-rta-black leading-tight">
+              Sustainable <br /><span className="text-rta-blue">Intelligence.</span>
+            </h2>
+            <p className="text-gray-500 text-xl font-bold leading-tight max-w-md">
+              Audit your stack. Measure Joules per Token (JPT) in real-time. Restore the natural order.
+            </p>
+            
+            <div className="flex flex-wrap gap-3 justify-center md:justify-start">
+              <div className="flex items-center gap-2 px-5 py-2 bg-rta-bg border-2 border-rta-black rounded-2xl font-black text-sm shadow-[3px_3px_0px_0px_#171717]">
+                <Leaf className="w-4 h-4 text-green-600" /> Carbon
+              </div>
+              <div className="flex items-center gap-2 px-5 py-2 bg-rta-bg border-2 border-rta-black rounded-2xl font-black text-sm shadow-[3px_3px_0px_0px_#171717]">
+                <Droplets className="w-4 h-4 text-rta-blue" /> Water
+              </div>
+              <div className="flex items-center gap-2 px-5 py-2 bg-rta-bg border-2 border-rta-black rounded-2xl font-black text-sm shadow-[3px_3px_0px_0px_#171717]">
+                <Zap className="w-4 h-4 text-rta-yellow" /> JPT
+              </div>
+            </div>
+
+            <button
+              onClick={onStart}
+              className="group flex items-center gap-3 px-10 py-5 bg-rta-black text-white text-2xl font-black rounded-2xl shadow-[6px_6px_0px_0px_#2563EB] hover:bg-rta-blue hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+            >
+              Launch Assessment
+              <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform text-rta-yellow" />
+            </button>
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }

@@ -1,17 +1,15 @@
 @import "tailwindcss";
 
 @theme {
-  /* Our custom Pinata/MetaMask color palette */
-  --color-rta-bg: #FDF9F1;     /* Warm cream background */
-  --color-rta-blue: #2563EB;   /* Royal Blue */
-  --color-rta-red: #EF4444;    /* Punchy Red */
-  --color-rta-yellow: #FBBF24; /* Mustard/Golden Yellow */
-  --color-rta-black: #171717;  /* Stark almost-black */
-  --color-rta-cyan: #06B6D4;   /* NEW: Electric Cyan for Water */
-  /* Custom Font */
+  --color-rta-bg: #FDF9F1;
+  --color-rta-blue: #2563EB;
+  --color-rta-red: #EF4444;
+  --color-rta-yellow: #FBBF24;
+  --color-rta-black: #171717;
+  --color-rta-cyan: #06B6D4; 
+  
   --font-sans: 'Inter', system-ui, sans-serif;
 
-  /* Custom Shadows for the poppy UI */
   --shadow-hard: 6px 6px 0px 0px rgba(23, 23, 23, 1);
   --shadow-hover: 2px 2px 0px 0px rgba(23, 23, 23, 1);
 }
@@ -22,5 +20,14 @@
     color: var(--color-rta-black);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
 }
+
+/* Custom Utilities */
+.text-shadow-hard {
+  text-shadow: 8px 8px 0px rgba(23, 23, 23, 1);
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

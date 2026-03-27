@@ -1,30 +1,43 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-// CRITICAL FIX: Added Radar components to imports
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, 
   AreaChart, Area, CartesianGrid, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis 
 } from 'recharts';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { ArrowLeft, Download, Zap, Leaf, ShieldAlert, Cloud, CheckCircle2, Loader2, Droplets, Cpu } from 'lucide-react';
+import { ArrowLeft, Download, Zap, Leaf, ShieldAlert, Cloud, CheckCircle2, Loader2, Droplets, Cpu, Coins, Award } from 'lucide-react';
 
 export default function Dashboard({ data, onReset }) {
   const [isSyncing, setIsSyncing] = useState(false);
+  const [credits, setCredits] = useState(0);
 
-  // Destructure the payload - ensuring radarData and jpt are pulled
-  const { score, totalKwh, totalCo2, totalWater, jpt, recommendations, comparisonData, trendData, radarData } = data;
+  // Destructure the payload
+  const { score, totalKwh, totalCo2, totalWater, jpt, recommendations, trendData, radarData } = data;
   
+  // Enterprise Carbon Credit Sync Logic
   const handleEnterpriseSync = () => {
     setIsSyncing(true);
     setTimeout(() => {
       setIsSyncing(false);
-      toast.success('AWS CloudTrail & Billing successfully synced!', {
-        position: "bottom-right",
-        theme: "colored",
-        style: { backgroundColor: '#171717', color: '#FDF9F1', border: '2px solid #FBBF24' }
-      });
-    }, 1500);
+      
+      // If the score is high (>75), grant credits. Otherwise, encourage optimization.
+      if (score > 75) {
+        const earned = Math.floor(score * 1.5);
+        setCredits(earned);
+        toast.success(`AWS Billing Verified! You earned ${earned} Carbon Credits for your low-impact usage.`, {
+          position: "bottom-right",
+          theme: "colored",
+          style: { backgroundColor: '#171717', color: '#FDF9F1', border: '2px solid #FBBF24' }
+        });
+      } else {
+        toast.info('AWS Billing Synced. To qualify for Carbon Credits, follow the optimization insights to raise your score above 75.', {
+          position: "bottom-right",
+          theme: "colored",
+          style: { backgroundColor: '#171717', color: '#FDF9F1', border: '2px solid #2563EB' }
+        });
+      }
+    }, 2000);
   };
 
   const handleExport = () => window.print();
@@ -46,7 +59,7 @@ export default function Dashboard({ data, onReset }) {
         <button onClick={onReset} className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-rta-black rounded-xl font-bold hover:bg-rta-bg shadow-[4px_4px_0px_0px_#171717] transition-all">
           <ArrowLeft className="w-5 h-5" /> Re-calculate
         </button>
-        <h1 className="text-3xl font-black hidden md:block text-rta-black">GenAI Impact Report</h1>
+        <h1 className="text-3xl font-black hidden md:block text-rta-black uppercase italic">GenAI Impact Report</h1>
         <button onClick={handleExport} className="flex items-center gap-2 px-6 py-3 bg-rta-yellow text-rta-black border-2 border-rta-black rounded-xl font-bold hover:bg-rta-black hover:text-white shadow-[4px_4px_0px_0px_#171717] transition-all">
           <Download className="w-5 h-5" /> Export PDF Report
         </button>
@@ -104,13 +117,13 @@ export default function Dashboard({ data, onReset }) {
           </div>
         </motion.div>
 
-        {/* Charts Grid */}
+        {/* Charts Row */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
-          {/* Left: Trend Charts */}
+          {/* Left Column: Historical Trends */}
           <div className="lg:col-span-2 space-y-6">
             <motion.div variants={itemVars} className="bg-white border-4 border-rta-black rounded-3xl p-6 shadow-[8px_8px_0px_0px_#171717]">
-              <h3 className="text-xl font-black mb-2">7-Day Emissions Trend (g CO₂)</h3>
+              <h3 className="text-xl font-black mb-2 uppercase">7-Day Emissions (g CO₂)</h3>
               <div className="h-[250px] w-full mt-4">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={trendData}>
@@ -131,8 +144,8 @@ export default function Dashboard({ data, onReset }) {
             </motion.div>
 
             <motion.div variants={itemVars} className="bg-white border-4 border-rta-black rounded-3xl p-6 shadow-[8px_8px_0px_0px_#06B6D4]">
-              <h3 className="text-xl font-black mb-2 flex items-center gap-2">
-                <Droplets className="w-6 h-6 text-[#06B6D4]" /> 7-Day Water Cooling Trend (Liters)
+              <h3 className="text-xl font-black mb-2 flex items-center gap-2 uppercase">
+                <Droplets className="w-6 h-6 text-[#06B6D4]" /> 7-Day Water Cooling (L)
               </h3>
               <div className="h-[250px] w-full mt-4">
                 <ResponsiveContainer width="100%" height="100%">
@@ -148,13 +161,48 @@ export default function Dashboard({ data, onReset }) {
             </motion.div>
           </div>
 
-          {/* Right: Analysis & Radar */}
+          {/* Right Column: Enterprise Analysis & Rewards */}
           <div className="space-y-6 flex flex-col">
-            <motion.div variants={itemVars} className="bg-white border-4 border-rta-black rounded-3xl p-6 shadow-[8px_8px_0px_0px_#171717] flex flex-col">
-              <h3 className="text-xl font-black mb-4 flex items-center gap-2">
-                <Cpu className="w-6 h-6 text-rta-blue" /> Efficiency Balance
+            
+            {/* AWS Carbon Credit Sync Card */}
+            <motion.div variants={itemVars} className="bg-white border-4 border-rta-black rounded-3xl p-6 shadow-[8px_8px_0px_0px_#171717] print:hidden">
+              <div className="flex items-center gap-3 mb-4">
+                <Cloud className="w-6 h-6 text-rta-blue" />
+                <h3 className="text-xl font-black uppercase tracking-tight">AWS Billing Sync</h3>
+              </div>
+              <p className="text-gray-600 font-medium mb-6 text-sm">Verify your cloud footprint to qualify for enterprise carbon credits. Enterprises with scores above 75 receive direct billing offsets.</p>
+              <button 
+                onClick={handleEnterpriseSync} 
+                disabled={isSyncing} 
+                className="w-full flex justify-center items-center gap-2 py-4 bg-rta-yellow border-2 border-rta-black rounded-xl font-bold hover:bg-white transition-all disabled:opacity-70 shadow-[4px_4px_0px_0px_#171717]"
+              >
+                {isSyncing ? <Loader2 className="w-5 h-5 animate-spin text-rta-blue" /> : <RefreshCw className="w-5 h-5" />}
+                {isSyncing ? 'Syncing...' : 'Sync for Credits'}
+              </button>
+            </motion.div>
+
+            {/* NEW: Carbon Credit Wallet (Replaces Benchmark) */}
+            <motion.div variants={itemVars} className="bg-rta-black text-white border-4 border-rta-black rounded-3xl p-6 shadow-[8px_8px_0px_0px_#FBBF24] flex flex-col items-center justify-center text-center">
+              <Award className="w-12 h-12 text-rta-yellow mb-4" />
+              <h3 className="text-xl font-black uppercase mb-1">Carbon Wallet</h3>
+              <p className="text-gray-400 text-xs font-bold mb-6 tracking-widest uppercase">Available Credits</p>
+              
+              <div className="flex items-center gap-3">
+                <Coins className="w-10 h-10 text-rta-yellow" />
+                <span className="text-6xl font-black">{credits}</span>
+              </div>
+              
+              <div className="mt-8 p-3 bg-white/10 rounded-xl w-full border border-white/10">
+                <p className="text-xs font-bold text-rta-yellow uppercase tracking-tighter">Status: {score > 75 ? 'Qualified' : 'Pending Optimization'}</p>
+              </div>
+            </motion.div>
+
+            {/* Hardware Telemetry / Radar Chart */}
+            <motion.div variants={itemVars} className="bg-white border-4 border-rta-black rounded-3xl p-6 shadow-[8px_8px_0px_0px_#171717] flex-grow flex flex-col">
+              <h3 className="text-xl font-black mb-4 flex items-center gap-2 uppercase tracking-tighter">
+                <Cpu className="w-6 h-6 text-rta-blue" /> Efficiency
               </h3>
-              <div className="h-[240px] w-full">
+              <div className="h-[200px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
                     <PolarGrid stroke="#e5e7eb" />
@@ -166,28 +214,13 @@ export default function Dashboard({ data, onReset }) {
                       stroke="#2563EB"
                       fill="#2563EB"
                       fillOpacity={0.5}
-                      isAnimationActive={false}
                     />
                   </RadarChart>
                 </ResponsiveContainer>
               </div>
-              <div className="mt-4 p-3 bg-rta-bg border-2 border-rta-black rounded-xl text-center">
-                <div className="text-xs font-bold uppercase text-gray-500">Hardware Telemetry (JPT)</div>
-                <div className="text-2xl font-black text-rta-black">{jpt} <span className="text-sm">J / Token</span></div>
-              </div>
-            </motion.div>
-
-            <motion.div variants={itemVars} className="bg-white border-4 border-rta-black rounded-3xl p-6 shadow-[8px_8px_0px_0px_#171717] flex-grow flex flex-col">
-              <h3 className="text-xl font-black mb-2 px-2 pt-2">Benchmarking</h3>
-              <div className="h-[200px] w-full mt-4">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={comparisonData} margin={{ top: 10, right: 30, left: 0, bottom: 20 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: '800', fill: '#171717'}} interval={0} />
-                    <RechartsTooltip cursor={{fill: '#FDF9F1'}} contentStyle={{ borderRadius: '12px', border: '2px solid #171717', fontWeight: 'bold' }} />
-                    <Bar isAnimationActive={false} dataKey="co2" fill="#2563EB" radius={[6, 6, 0, 0]} barSize={40} />
-                  </BarChart>
-                </ResponsiveContainer>
+              <div className="mt-4 p-2 bg-rta-bg border-2 border-rta-black rounded-xl text-center">
+                <div className="text-[10px] font-black uppercase text-gray-500 tracking-widest leading-none mb-1">Hardware JPT</div>
+                <div className="text-xl font-black text-rta-black">{jpt} <span className="text-xs">J/T</span></div>
               </div>
             </motion.div>
           </div>
@@ -197,3 +230,6 @@ export default function Dashboard({ data, onReset }) {
     </div>
   );
 }
+
+// Missing icon import needed for the sync button
+import { RefreshCw } from 'lucide-react';
