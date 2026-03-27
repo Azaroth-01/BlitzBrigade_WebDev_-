@@ -44,19 +44,22 @@ app.post('/api/calculate', async (req, res) => {
             score: Math.round(score),
             totalKwh,
             totalCo2,
-            totalWater,
+            totalWater, // This is for the top card
             recommendations,
-            // Chart 1 Data: Mock comparisons based on the user's actual math
             comparisonData: [
                 { name: 'Your Usage', co2: parseFloat(totalCo2) },
                 { name: 'Optimized', co2: parseFloat(totalCo2) * 0.4 },
                 { name: 'Industry Avg', co2: parseFloat(totalCo2) * 1.5 }
             ],
-            // Chart 2 Data: Mock 7-day trend with slight random fluctuations
-            trendData: Array.from({length: 7}, (_, i) => ({
-                day: `Day ${i+1}`,
-                emissions: parseFloat(totalCo2) * (1 + (Math.random() * 0.4 - 0.2)) 
-            }))
+            // FIX: Inject 'water' into the 7-day trend
+            trendData: Array.from({length: 7}, (_, i) => {
+                const fluctuation = (1 + (Math.random() * 0.4 - 0.2));
+                return {
+                    day: `Day ${i+1}`,
+                    emissions: parseFloat((totalCo2 * fluctuation).toFixed(2)),
+                    water: parseFloat((totalWater * fluctuation).toFixed(2)) // CRITICAL FIX
+                };
+            })
         });
 
     } catch (error) {

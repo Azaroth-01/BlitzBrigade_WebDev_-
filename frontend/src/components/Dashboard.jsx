@@ -165,11 +165,28 @@ export default function Dashboard({ data, onReset }) {
               <h3 className="text-xl font-black mb-2">Benchmarking</h3>
               <div className="h-[200px] w-full mt-4">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={comparisonData}>
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 'bold'}} />
-                    <RechartsTooltip cursor={{fill: 'transparent'}} contentStyle={{ borderRadius: '12px', border: '2px solid #171717', fontWeight: 'bold' }} />
-                    <Bar dataKey="co2" fill="#2563EB" radius={[4, 4, 0, 0]} />
-                  </BarChart>
+                  <BarChart data={comparisonData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
+  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+  <XAxis 
+    dataKey="name" 
+    axisLine={false} 
+    tickLine={false} 
+    tick={{fontSize: 11, fontWeight: '800', fill: '#171717'}} 
+    interval={0} // Forces all labels to show
+  />
+  <RechartsTooltip 
+    cursor={{fill: '#FDF9F1'}} 
+    contentStyle={{ borderRadius: '12px', border: '2px solid #171717', fontWeight: 'bold' }} 
+  />
+  {/* barSize={60} prevents the bars from becoming too wide on large screens */}
+  <Bar 
+    isAnimationActive={false} 
+    dataKey="co2" 
+    fill="#2563EB" 
+    radius={[6, 6, 0, 0]} 
+    barSize={60} 
+  />
+</BarChart>
                 </ResponsiveContainer>
               </div>
             </motion.div>
