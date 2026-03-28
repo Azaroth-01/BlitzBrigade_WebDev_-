@@ -92,8 +92,9 @@ npm run dev
 ## 🤝 The Team
 
 1.Aaryamaan Rai
-2.Lavya Jain
+2.Lavya Jain (@lavyajn)
+
 
 ---
 
-*Built with ❤️ (and a lot of coffee) for the [Hackathon Name] Hackathon.*
+
